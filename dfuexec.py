@@ -203,9 +203,8 @@ class PwnedDFUDevice():
         if saveBackup:
             date = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
             filename = 'nor-backups/nor-%s-%s.dump' % (self.ecid_string(), date)
-            f = open(filename, 'wb')
-            f.write(nor)
-            f.close()
+            with open(filename, 'wb') as f:
+                f.write(nor)
             print('NOR backed up to file: %s' % filename)
 
         return nor
@@ -219,9 +218,8 @@ class PwnedDFUDevice():
         help1 = 'Download iPhone2,1_4.3.5_8L1_Restore.ipsw and use the following command to extract iBSS:'
         help2 = 'unzip -p iPhone2,1_4.3.5_8L1_Restore.ipsw Firmware/dfu/iBSS.n88ap.RELEASE.dfu > n88ap-iBSS-4.3.5.img3'
         try:
-            f = open('n88ap-iBSS-4.3.5.img3', 'rb')
-            data = f.read()
-            f.close()
+            with open('n88ap-iBSS-4.3.5.img3', 'rb') as f:
+                data = f.read()
         except:
             print('ERROR: n88ap-iBSS-4.3.5.img3 is missing.')
             print(help1)
@@ -293,9 +291,8 @@ class PwnedDFUDevice():
 
         KEYBAG_FILENAME = 'aes-keys/S5L%s-firmware' % self.config.cpid
         try:
-            f = open(KEYBAG_FILENAME, 'rb')
-            data = f.read()
-            f.close()
+            with open(KEYBAG_FILENAME, 'rb') as f:
+                data = f.read()
         except IOError:
             data = str()
         assert len(data) % 2 * KEYBAG_LENGTH == 0
@@ -307,8 +304,6 @@ class PwnedDFUDevice():
         device = PwnedDFUDevice()
         decrypted_keybag = device.aes(keybag, AES_DECRYPT, AES_GID_KEY)
 
-        f = open(KEYBAG_FILENAME, 'a')
-        f.write(keybag + decrypted_keybag)
-        f.close()
-
+        with open(KEYBAG_FILENAME, 'a') as f:
+            f.write(keybag + decrypted_keybag)
         return decrypted_keybag

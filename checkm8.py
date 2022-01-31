@@ -53,7 +53,6 @@ def libusb1_no_error_ctrl_transfer(device, bmRequestType, bRequest, wValue, wInd
   except usb.core.USBError as e:
     #traceback.print_exc()
     print("ctrl transfer ERROR: %d %d %r" % (bmRequestType, bRequest, e))
-    pass
 
 def usb_rop_callbacks(address, func_gadget, callbacks):
   data = b''

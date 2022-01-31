@@ -36,7 +36,7 @@ def remove_exploit(img3):
         # This is a 24Kpwn implementation which changes DATA tag. First dword of DATA tag should look like a shellcode address.
         shellcode_address, = struct.unpack('<I', img3[64:68])
         assert img3[52:56] == 'DATA'[::-1]
-        assert 0x84000000 <= shellcode_address and shellcode_address <= 0x84024000
+        assert shellcode_address >= 0x84000000 and shellcode_address <= 0x84024000
 
         # Try to find the correct value for the first dword.
         found = False

@@ -74,18 +74,16 @@ def libusb1_path_internal():
         if version.startswith(config.version):
             path = DYLIB_PATH_FORMAT % config.bottle
             try:
-                f = open(path, 'rb')
-                dylib = f.read()
-                f.close()
+                with open(path, 'rb') as f:
+                    dylib = f.read()
                 if hashlib.sha256(dylib).hexdigest() == config.dylib_sha256:
                     return path
                 print('WARNING: SHA256 hash of existing dylib does not match.')
             except IOError:
                 pass
 
-            f = open(BOTTLE_PATH_FORMAT % config.bottle, 'rb')
-            bottle = f.read()
-            f.close()
+            with open(BOTTLE_PATH_FORMAT % config.bottle, 'rb') as f:
+                bottle = f.read()
             if hashlib.sha256(bottle).hexdigest() != config.bottle_sha256:
                 print('ERROR: SHA256 hash of bottle does not match.')
                 sys.exit(1)
@@ -97,9 +95,8 @@ def libusb1_path_internal():
                     if hashlib.sha256(patched_dylib).hexdigest() != config.dylib_sha256:
                         print('ERROR: SHA256 hash of new dylib does not match.')
                         sys.exit(1)
-                    f = open(path, 'wb')
-                    f.write(patched_dylib)
-                    f.close()
+                    with open(path, 'wb') as f:
+                        f.write(patched_dylib)
                     return path
 
     # No match found.

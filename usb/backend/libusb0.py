@@ -48,22 +48,16 @@ _logger = logging.getLogger('usb.backend.libusb0')
 if sys.platform.find('bsd') != -1 or sys.platform.find('mac') != -1 or \
         sys.platform.find('darwin') != -1 or sys.platform.find('sunos5') != -1:
     _PATH_MAX = 1024
-elif sys.platform == 'win32' or sys.platform == 'cygwin':
+elif sys.platform in ['win32', 'cygwin']:
     _PATH_MAX = 511
 else:
     _PATH_MAX = os.pathconf('.', 'PC_PATH_MAX')
 
-# libusb-win32 makes all structures packed, while
-# default libusb only does for some structures
-# _PackPolicy defines the structure packing according
-# to the platform.
 class _PackPolicy(object):
     pass
 
-if sys.platform == 'win32' or sys.platform == 'cygwin':
+if sys.platform in ['win32', 'cygwin']:
     _PackPolicy._pack_ = 1
-
-# Data structures
 
 class _usb_descriptor_header(Structure):
     _pack_ = 1
@@ -418,16 +412,15 @@ def _check(ret):
         if hasattr(ret, 'value'):
             ret = ret.value
 
-        if ret < 0:
-            errmsg = _lib.usb_strerror()
-            # No error means that we need to get the error
-            # message from the return code
-            # Thanks to Nicholas Wheeler to point out the problem...
-            # Also see issue #2860940
-            if errmsg.lower() == 'no error':
-                errmsg = os.strerror(-ret)
-        else:
+        if ret >= 0:
             return ret
+        errmsg = _lib.usb_strerror()
+        # No error means that we need to get the error
+        # message from the return code
+        # Thanks to Nicholas Wheeler to point out the problem...
+        # Also see issue #2860940
+        if errmsg.lower() == 'no error':
+            errmsg = os.strerror(-ret)
     raise USBError(errmsg, ret)
 
 def _has_iso_transfer():
@@ -619,14 +612,13 @@ class _LibUSB(usb.backend.IBackend):
     def __read(self, fn, dev_handle, ep, intf, buff, timeout):
         address, length = buff.buffer_info()
         length *= buff.itemsize
-        ret = int(_check(fn(
+        return int(_check(fn(
                     dev_handle,
                     ep,
                     cast(address, c_char_p),
                     length,
                     timeout
                 )))
-        return ret
 
     def __iso_transfer(self, dev_handle, ep, intf, data, timeout):
         context = c_void_p()

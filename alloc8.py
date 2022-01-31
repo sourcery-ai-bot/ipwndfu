@@ -95,9 +95,7 @@ def exploit(nor, version):
 
 	# Image no. 714 must end at the end of the 4096-byte block.
 	NOR_READ_SIZE = 4096
-	offset = 0
-	for image in new_nor.images:
-		offset += len(image)
+	offset = sum(len(image) for image in new_nor.images)
 	size = NOR_READ_SIZE - offset % NOR_READ_SIZE
 	new_nor.images.append(empty_img3(size))
 

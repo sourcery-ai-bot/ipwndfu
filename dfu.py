@@ -33,13 +33,12 @@ def reset_counters(device):
     assert device.ctrl_transfer(0x21, 4, 0, 0, 0, 1000) == 0
 
 def usb_reset(device):
-    print('Performing USB port reset.')
-    try:
-        device.reset()
-    except usb.core.USBError:
-        # OK: doesn't happen on Yosemite but happens on El Capitan and Sierra
-        print('Caught exception during port reset; should still work.')
-        pass
+  print('Performing USB port reset.')
+  try:
+    device.reset()
+  except usb.core.USBError:
+    # OK: doesn't happen on Yosemite but happens on El Capitan and Sierra
+    print('Caught exception during port reset; should still work.')
 
 def send_data(device, data):
     #print 'Sending 0x%x of data to device.' % len(data)
